@@ -5,4 +5,4 @@ Repository to the paper "Pretraining is all you need: A Multi-Atlas Transformer 
 
 ![METAFormer](assets/metaformer_arch.png)
 
-:pushpin: **FULL CODE RELEASE UPON ACCEPTION**
+:pushpin: **FULL CODE RELEASE UPON PUBLICATION**
