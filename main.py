@@ -7,9 +7,9 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, average_precision_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 
-from METAFormer.dataloader import MultiAtlas
-from METAFormer.models import METAFormer
-from METAFormer.utils import train, test
+from METAFormer.dataloader import ImputationDataset, MultiAtlas
+from METAFormer.models import METAFormer, METAWrapper
+from METAFormer.utils import pretrain, train, test
 
 
 cfg = {
@@ -61,10 +61,31 @@ def train_cross_validate():
         test_loader = DataLoader(MultiAtlas(
             test_df, softsign=False), batch_size=cfg["BATCH_SIZE"], shuffle=False, num_workers=8, pin_memory=True)
 
+        # Pretrain
+        pretrain_loader = DataLoader(ImputationDataset(
+            train_df), batch_size=cfg["BATCH_SIZE"], shuffle=True, num_workers=8, pin_memory=True)
+        preval_loader = DataLoader(ImputationDataset(
+            val_df), batch_size=cfg["BATCH_SIZE"], shuffle=False, num_workers=8, pin_memory=True)
+
+        pt_model = METAWrapper(d_model=256, dim_feedforward=128, num_encoder_layers=2,
+                               num_heads=4, dropout=cfg["DROP"]).to(cfg["DEVICE"])
+
+        pt_optim = optim.AdamW(METAWrapper.parameters(),
+                               lr=cfg["LR"], weight_decay=cfg["WEIGHT_DECAY"])
+
+        pretrained = pretrain(model=METAWrapper, train_loader=pretrain_loader, val_loader=preval_loader,
+                              optimizer=pt_optim, epochs=1000, device=device, stage=f"pretrain fold {fold}", patience=50, scheduler=None)
+
+        print("Pretraining finished...")
+
+        # Load pretrained weights
         model = METAFormer(d_model=256, dim_feedforward=128, num_encoder_layers=2,
                            num_heads=4, dropout=cfg["DROP"]).to(cfg["DEVICE"])
-        sd = torch.load("model_weights.pt")
-        model.load_state_dict(sd)
+        model.aal_encoder.load_state_dict(pretrained.aal_encoder.state_dict())
+        model.cc200_encoder.load_state_dict(
+            pretrained.cc200_encoder.state_dict())
+        model.dos160_encoder.load_state_dict(
+            pretrained.dos160_encoder.state_dict())
 
         optimizer = optim.AdamW(
             model.parameters(), lr=cfg["LR"], weight_decay=cfg["WEIGHT_DECAY"])
@@ -102,6 +123,7 @@ def train_cross_validate():
     print(results)
     print(80 * "=")
     print(f"Mean accuracy: {np.mean(accs)}")
+    print(f"Std accuracy: {np.std(accs)}")
 
 
 if __name__ == "__main__":
