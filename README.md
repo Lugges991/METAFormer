@@ -1,13 +1,7 @@
 # METAFormer
 Repository for my Master Thesis entitled "Towards Interpretable Brain Biomarker Extraction using Deep Learning for fMRI Prediction" and the accompanying MICCAI 2023 MLCN paper "Pretraining is all you need: A Multi-Atlas Transformer Framework for Autism Spectrum Disorder Classification" 
 
-<<<<<<< HEAD
-:pushpin: METAFormer pre-print is available at [arxiv](https://arxiv.org/abs/2307.01759)
-
-![METAFormer](assets/metaformer_arch.png)
-
 :pushpin: **FULL CODE RELEASE UPON PUBLICATION**
-=======
 :pushpin: METAFormer paper is available at [arxiv](https://arxiv.org/abs/2307.01759)
 
 ![METAFormer](assets/metaformer_arch.png)
@@ -67,4 +61,3 @@ If you use METAFormer in your research, please cite our paper:
       primaryClass={cs.CV}
 }
 ```
->>>>>>> fd798b9 (added code for release)
