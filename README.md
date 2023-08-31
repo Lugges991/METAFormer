@@ -1,8 +1,10 @@
 # METAFormer
-Repository for my Master Thesis entitled "Towards Interpretable Brain Biomarker Extraction using Deep Learning for fMRI Prediction" and the accompanying MICCAI 2023 MLCN paper "Pretraining is all you need: A Multi-Atlas Transformer Framework for Autism Spectrum Disorder Classification" 
+Repository for my Master Thesis entitled "Towards Interpretable Brain Biomarker Extraction using Deep Learning for fMRI Prediction" and the accompanying MICCAI 2023 MLCN paper ["Pretraining is all you need: A Multi-Atlas Transformer Framework for Autism Spectrum Disorder Classification"](https://arxiv.org/abs/2307.01759) 
 
 :pushpin: **FULL CODE RELEASE UPON PUBLICATION**
-:pushpin: METAFormer paper is available at [arxiv](https://arxiv.org/abs/2307.01759)
+
+
+:pushpin: METAFormer paper on [arxiv](https://arxiv.org/abs/2307.01759)
 
 ![METAFormer](assets/metaformer_arch.png)
 
@@ -41,12 +43,12 @@ python3 gen_csv.py aal_dir cc200_dir dos160_dir --pheno_file pheno_file --output
 
 Run CV-pretraining-finetuning:
 ```
-python3 main.py
+python3 main.py --csv fc.csv
 ```
 
 Generate feature attributions and calculate mean max-sensitivity and infidelity for each (this might take some time):
 ```
-python3 attribute.py
+python3 attribute.py --checkpoint trained_model.pth --data test_data.csv
 ```
 
 ## Cite

@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import argparse
 from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, average_precision_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
@@ -27,11 +28,11 @@ cfg = {
 }
 
 
-def train_cross_validate():
+def pretrain_train_cross_validate(args):
 
     device = cfg["DEVICE"]
 
-    df = pd.read_csv("data/fc_multi_atlas.csv")
+    df = pd.read_csv(args.csv)
 
     # cross validation
     kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
@@ -81,7 +82,8 @@ def train_cross_validate():
         # Load pretrained weights
         model = METAFormer(d_model=256, dim_feedforward=128, num_encoder_layers=2,
                            num_heads=4, dropout=cfg["DROP"]).to(cfg["DEVICE"])
-        model.aal_encoder.load_state_dict(pretrained.aal_encoder.state_dict())
+        model.aal_encoder.load_state_dict(
+                pretrained.aal_encoder.state_dict())
         model.cc200_encoder.load_state_dict(
             pretrained.cc200_encoder.state_dict())
         model.dos160_encoder.load_state_dict(
@@ -127,4 +129,8 @@ def train_cross_validate():
 
 
 if __name__ == "__main__":
-    train_cross_validate()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--csv", type=str, required=True)
+    args = parser.parse_args()
+
+    pretrain_train_cross_validate(args)
